@@ -1,0 +1,51 @@
+import com.chrisjenx.gradle.deps
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath deps.android.classpath
+        classpath deps.kotlin.classpath
+        classpath deps.jitpack.classpath
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    configurations.all {
+        resolutionStrategy {
+            eachDependency { details ->
+                if (details.requested.group == 'org.jetbrains.kotlin') {
+                    details.useVersion deps.versions.kotlin
+                }
+            }
+        }
+    }
+}
+
+subprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+    tasks.withType(KotlinCompile).all {
+        kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
